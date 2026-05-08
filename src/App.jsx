@@ -1,59 +1,39 @@
 import "./App.css";
-import { useState } from "react";
+import { useWeather } from "./customHook/useWeather";
+import SearchBar from "./component/SearchBar";
+import WeatherDisplay from "./component/WeatherDisplay";
 
-const api = {
-  key: "124f933039491dbc0ad200f69355eae2",
-  base: "https://api.openweathermap.org/data/2.5/",
-};
 
+// This is the main file which controls other files
+/*
+using useWeather we have taken 4 components
+*/
 function App() {
-  const [search, setSearch] = useState("");
-  const [weather, setWeather] = useState({});
-
-  /*
-    Search button is pressed. Make a fetch call to the Open Weather Map API.
-  */
-  const searchPressed = () => {
-    fetch(`${api.base}weather?q=${search}&units=metric&APPID=${api.key}`)
-      .then((res) => res.json())
-      .then((result) => {
-        setWeather(result);
-      });
-  };
+  const { weather, loading, error, fetchWeather } = useWeather();
 
   return (
-    <div className="App">
-      <header className="App-header">
-        {/* HEADER  */}
-        <h1>Weather App</h1>
-
-        {/* Search Box - Input + Button  */}
-        <div>
-          <input
-            type="text"
-            placeholder="Enter city/town..."
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button onClick={searchPressed}>Search</button>
-        </div>
-
-        {/* If weather is not undefined display results from API */}
-        {typeof weather.main !== "undefined" ? (
-          <div>
-            {/* Location  */}
-            <p>{weather.name}</p>
-
-            {/* Temperature Celsius  */}
-            <p>{weather.main.temp}°C</p>
-
-            {/* Condition (Sunny ) */}
-            <p>{weather.weather[0].main}</p>
-            <p>({weather.weather[0].description})</p>
-          </div>
-        ) : (
-          ""
-        )}
+    <div className="app-wrapper">
+      <header>
+        <h1>React Weather App</h1>
       </header>
+
+      <main>
+        <SearchBar onSearch={fetchWeather} />     {/* using fetchWeather as prop */}
+
+        {/* Handling different UI states like loading === true if error is there or not */}
+        {loading && <p className="status-msg">Fetching weather data...</p>}
+        
+        {error && <p className="error-msg">{error}</p>}
+
+        {!loading && !error && (
+          <WeatherDisplay weather={weather} />
+        )}
+
+        {/* WelcomE Message */}
+        {!loading && !weather && !error && (
+          <p className="status-msg">Search for a city to get started!</p>
+        )}
+      </main>
     </div>
   );
 }
