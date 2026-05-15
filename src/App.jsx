@@ -7,6 +7,7 @@ import WeatherDisplay from "./component/WeatherDisplay";
 // This is the main file which controls other files
 /*
 using useWeather we have taken 4 components
+All conditional Rendering happens here
 */
 function App() {
   const { weather, loading, error, fetchWeather } = useWeather();
@@ -37,5 +38,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;
